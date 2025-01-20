@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts">
 import { defineComponent } from 'vue';
 import { Authenticator } from '@aws-amplify/ui-vue';
 import OnCallApplication from './components/OnCallApplication.vue';
