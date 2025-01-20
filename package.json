@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "aws-amplify": "^6.6.6",
+    "date-fns": "^4.1.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
@@ -27,7 +28,7 @@
     "esbuild": "^0.20.2",
     "npm-run-all2": "^6.1.2",
     "tsx": "^4.7.2",
-    "typescript": "^5.4.5",
+    "typescript": "^5.7.3",
     "vite": "^5.4.10",
     "vue-tsc": "^2.0.11"
   }
