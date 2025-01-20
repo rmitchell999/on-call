@@ -1,40 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { Auth, Hub } from 'aws-amplify';
-import Login from './components/Login.vue';
+import { defineComponent } from 'vue';
+import { Authenticator } from '@aws-amplify/ui-vue';
 import OnCallApplication from './components/OnCallApplication.vue';
 
-const isAuthenticated = ref(false);
-
-const checkAuthStatus = async () => {
-  try {
-    await Auth.currentAuthenticatedUser();
-    isAuthenticated.value = true;
-  } catch (error) {
-    isAuthenticated.value = false;
+export default defineComponent({
+  components: {
+    Authenticator,
+    OnCallApplication
   }
-};
-
-onMounted(async () => {
-  await checkAuthStatus();
-
-  // Listen for auth events to update the UI
-  Hub.listen('auth', async (data: any) => {
-    switch (data.payload.event) {
-      case 'signIn':
-        isAuthenticated.value = true;
-        break;
-      case 'signOut':
-        isAuthenticated.value = false;
-        break;
-    }
-  });
 });
 </script>
 
 <template>
   <main>
-    <Login v-if="!isAuthenticated" />
-    <OnCallApplication v-else />
+    <Authenticator>
+      <template #default="{ signOut, user }">
+        <OnCallApplication />
+      </template>
+    </Authenticator>
   </main>
 </template>
+
+<style>
+@import '@aws-amplify/ui-vue/styles.css';
+</style>
