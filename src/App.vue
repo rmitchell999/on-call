@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { Auth } from 'aws-amplify';
+import { Hub } from 'aws-amplify'
 import Login from './components/Login.vue';
 import OnCallApplication from './components/OnCallApplication.vue';
 
