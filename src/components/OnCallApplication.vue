@@ -21,7 +21,7 @@ const contacts = ref([
 ]);
 const onCallList = ref<OnCallEntry[]>([]);
 const timeOptions = ref(generateTimeOptions());
-const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
+const timezoneOptions = ref(['GMT', 'EST', 'PST', 'BST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
