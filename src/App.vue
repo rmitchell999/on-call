@@ -20,7 +20,7 @@ onMounted(async () => {
   await checkAuthStatus();
 
   // Listen for auth events to update the UI
-  Auth.Hub.listen('auth', async (data: any) => {
+ Hub.listen('auth', async (data: any) => {
     switch (data.payload.event) {
       case 'signIn':
         isAuthenticated.value = true;
