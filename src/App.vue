@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Auth } from 'aws-amplify';
-import { Hub } from 'aws-amplify'
+import { Auth, Hub } from 'aws-amplify';
 import Login from './components/Login.vue';
 import OnCallApplication from './components/OnCallApplication.vue';
 
@@ -20,7 +19,7 @@ onMounted(async () => {
   await checkAuthStatus();
 
   // Listen for auth events to update the UI
- Hub.listen('auth', async (data: any) => {
+  Hub.listen('auth', async (data: any) => {
     switch (data.payload.event) {
       case 'signIn':
         isAuthenticated.value = true;
