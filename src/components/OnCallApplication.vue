@@ -3,7 +3,7 @@
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
-import { Auth } from '@aws-amplify/auth'; // Import Auth from @aws-amplify/auth
+import { Amplify, Auth } from 'aws-amplify'; // Import Amplify and Auth from aws-amplify
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../amplify/backend/data/resource'; // Adjust the path based on your project structure
 
