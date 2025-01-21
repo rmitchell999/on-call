@@ -9,28 +9,28 @@
     </div>
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
-      <div class="schedule-options" v-if="!isReadOnly">
+      <div class="schedule-options">
         <div class="option-group">
           <label for="month">Month:</label>
-          <select id="month" v-model="selectedMonth" @change="generateCalendar">
+          <select id="month" v-model="selectedMonth" @change="generateCalendar" :disabled="isReadOnly">
             <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
           </select>
         </div>
         <div class="option-group">
           <label for="year">Year:</label>
-          <select id="year" v-model="selectedYear" @change="generateCalendar">
+          <select id="year" v-model="selectedYear" @change="generateCalendar" :disabled="isReadOnly">
             <option v-for="year in years" :key="year">{{ year }}</option>
           </select>
         </div>
         <div class="option-group">
           <label for="timezone">Timezone:</label>
-          <select id="timezone" v-model="selectedTimezone">
+          <select id="timezone" v-model="selectedTimezone" :disabled="isReadOnly">
             <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
           </select>
         </div>
         <div class="option-group">
           <label for="start-time">Start Time/End Time:</label>
-          <select id="start-time" v-model="startTime">
+          <select id="start-time" v-model="startTime" :disabled="isReadOnly">
             <option v-for="time in timeOptions" :key="time">{{ time }}</option>
           </select>
         </div>

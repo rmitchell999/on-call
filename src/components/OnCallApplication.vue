@@ -1,9 +1,15 @@
-
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { Auth } from '@aws-amplify/auth'; // Import Auth from @aws-amplify/auth
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../amplify/backend/data/resource'; // Adjust the path based on your project structure
+
+// Generate data client
+const client = generateClient<Schema>();
+
 interface OnCallEntry {
   groupName: string;
   day: string;
@@ -17,10 +23,7 @@ const showModal = ref(false);
 const editIndex = ref<number | null>(null);
 const form = ref({ email: '', phone: '', name: '', onCall: false });
 const errorMessage = ref('');
-const contacts = ref([
-  { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
-  { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
-]);
+const contacts = ref<OnCallEntry[]>([]);
 const onCallList = ref<OnCallEntry[]>([]);
 const timeOptions = ref(generateTimeOptions());
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'BST', 'CET']);
@@ -44,6 +47,15 @@ async function checkUserGroup() {
     }
   } catch (error) {
     console.error('Error checking user group:', error);
+  }
+}
+
+async function loadContacts() {
+  try {
+    const { data } = await client.models.OnCallEntry.list();
+    contacts.value = data;
+  } catch (error) {
+    console.error('Error loading contacts:', error);
   }
 }
 
@@ -79,8 +91,12 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   errorMessage.value = '';
 };
 
-const saveContacts = () => {
-  localStorage.setItem('contacts', JSON.stringify(contacts.value));
+const saveContacts = async () => {
+  try {
+    await client.models.OnCallEntry.create({ input: contacts.value });
+  } catch (error) {
+    console.error('Error saving contacts:', error);
+  }
 };
 
 const saveContact = () => {
@@ -98,9 +114,13 @@ const saveContact = () => {
   saveContacts();
 };
 
-const deleteContact = (index: number) => {
-  contacts.value.splice(index, 1);
-  saveContacts();
+const deleteContact = async (index: number) => {
+  try {
+    await client.models.OnCallEntry.delete({ id: contacts.value[index].id });
+    contacts.value.splice(index, 1);
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+  }
 };
 
 const generateCalendar = () => {
@@ -117,7 +137,7 @@ const generateCalendar = () => {
   loadSchedule();
 };
 
-const saveSchedule = () => {
+const saveSchedule = async () => {
   const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
   const schedule = {
@@ -125,23 +145,31 @@ const saveSchedule = () => {
     startTime: startTime.value,
     onCallList: onCallList.value,
   };
-  localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
-  console.log('Schedule saved:', schedule);
+  try {
+    await client.models.OnCallEntry.create({ input: schedule });
+    console.log('Schedule saved:', schedule);
+  } catch (error) {
+    console.error('Error saving schedule:', error);
+  }
 };
 
-const loadSchedule = () => {
-  const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
-  if (savedSchedule) {
-    const schedule = JSON.parse(savedSchedule);
-    selectedTimezone.value = schedule.timezone;
-    startTime.value = schedule.startTime;
-    onCallList.value.forEach(entry => {
-      const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
-      if (savedEntry) {
-        entry.contact = savedEntry.contact;
-        entry.phone = savedEntry.phone;
-      }
-    });
+const loadSchedule = async () => {
+  try {
+    const savedSchedule = await client.models.OnCallEntry.list();
+    if (savedSchedule) {
+      const schedule = savedSchedule.data;
+      selectedTimezone.value = schedule.timezone;
+      startTime.value = schedule.startTime;
+      onCallList.value.forEach(entry => {
+        const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
+        if (savedEntry) {
+          entry.contact = savedEntry.contact;
+          entry.phone = savedEntry.phone;
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error loading schedule:', error);
   }
 };
 
@@ -149,11 +177,8 @@ const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleStrin
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
 
 onMounted(async () => {
-  const savedContacts = localStorage.getItem('contacts');
-  if (savedContacts) {
-    contacts.value = JSON.parse(savedContacts);
-  }
   await checkUserGroup();
+  await loadContacts();
   generateCalendar();
 });
 </script>

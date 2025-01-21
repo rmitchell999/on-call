@@ -1,8 +1,8 @@
-
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { Authenticator } from '@aws-amplify/ui-vue';
 import OnCallApplication from './components/OnCallApplication.vue';
+
 export default defineComponent({
   components: {
     Authenticator,
@@ -10,6 +10,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <template>
   <main>
     <Authenticator>
@@ -19,6 +20,7 @@ export default defineComponent({
     </Authenticator>
   </main>
 </template>
+
 <style>
 @import '@aws-amplify/ui-vue/styles.css';
 </style>
