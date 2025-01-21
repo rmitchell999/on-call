@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@aws-amplify/ui-angular": "^5.0.35",
     "@aws-amplify/ui-react": "^6.9.0",
     "@aws-amplify/ui-vue": "^4.2.27",
     "aws-amplify": "^6.12.1",
