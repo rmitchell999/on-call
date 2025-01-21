@@ -15,7 +15,7 @@ export default defineComponent({
   <main>
     <Authenticator>
       <template #default="{ signOut, user }">
-        <OnCallApplication />
+        <OnCallApplication :signOut="signOut" />
       </template>
     </Authenticator>
   </main>
