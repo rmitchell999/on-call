@@ -15,11 +15,12 @@ export default defineComponent({
   <main>
     <Authenticator>
       <template #default="{ signOut, user }">
-        <OnCallApplication :signOut="signOut" />
+        <OnCallApplication :signOut="signOut" :user="user" />
       </template>
     </Authenticator>
   </main>
 </template>
+
 
 <style>
 @import '@aws-amplify/ui-vue/styles.css';

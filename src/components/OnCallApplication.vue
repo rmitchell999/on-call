@@ -3,6 +3,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
+import { Auth, Hub } from 'aws-amplify';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
@@ -12,7 +13,7 @@ interface OnCallEntry {
   phone: string;
 }
 
-const props = defineProps<{ signOut: () => void }>();
+const props = defineProps<{ signOut: () => void; user: any }>();
 
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -30,6 +31,25 @@ const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
+const userGroups = ref<string[]>([]);
+
+onMounted(async () => {
+  const savedContacts = localStorage.getItem('contacts');
+  if (savedContacts) {
+    contacts.value = JSON.parse(savedContacts);
+  }
+  generateCalendar();
+
+  // Fetch user groups
+  const userInfo = await Auth.currentAuthenticatedUser();
+  const groups = userInfo.signInUserSession.accessToken.payload["cognito:groups"] || [];
+  userGroups.value = groups;
+
+  // Filter contacts for read-only users
+  if (userGroups.value.includes('TerneuzenReadOnly')) {
+    contacts.value = contacts.value.filter(contact => contact.email === props.user.attributes.email);
+  }
+});
 
 function generateTimeOptions() {
   const times = [];
@@ -131,13 +151,6 @@ const loadSchedule = () => {
 
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
-onMounted(() => {
-  const savedContacts = localStorage.getItem('contacts');
-  if (savedContacts) {
-    contacts.value = JSON.parse(savedContacts);
-  }
-  generateCalendar();
-});
 </script>
 
 <style src="./OnCallApplication.css" scoped></style>
