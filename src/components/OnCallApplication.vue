@@ -1,20 +1,16 @@
-<template src="./OnCallApplication.html"></template>
 
+<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
-import { Auth } from '@aws-amplify/auth';
-
 interface OnCallEntry {
   groupName: string;
   day: string;
   contact: string;
   phone: string;
 }
-
-const props = defineProps<{ signOut: () => void; user: any }>();
-
+const props = defineProps<{ signOut: () => void }>();
 const activeTab = ref('schedule');
 const showModal = ref(false);
 const editIndex = ref<number | null>(null);
@@ -31,26 +27,6 @@ const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
-const userGroups = ref<string[]>([]);
-
-onMounted(async () => {
-  const savedContacts = localStorage.getItem('contacts');
-  if (savedContacts) {
-    contacts.value = JSON.parse(savedContacts);
-  }
-  generateCalendar();
-
-  // Fetch user groups
-  const userInfo = await Auth.currentAuthenticatedUser();
-  const groups = userInfo.signInUserSession.accessToken.payload["cognito:groups"] || [];
-  userGroups.value = groups;
-
-  // Filter contacts for read-only users
-  if (userGroups.value.includes('TerneuzenReadOnly')) {
-    contacts.value = contacts.value.filter(contact => contact.email === props.user.attributes.email);
-  }
-});
-
 function generateTimeOptions() {
   const times = [];
   for (let i = 0; i < 24; i++) {
@@ -62,14 +38,12 @@ function generateTimeOptions() {
   }
   return times;
 }
-
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
     onCallList.value[index].phone = selectedContact.phone;
   }
 };
-
 const openModal = (event: MouseEvent, index: number | null = null) => {
   event.preventDefault();
   if (index !== null) {
@@ -82,11 +56,9 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   showModal.value = true;
   errorMessage.value = '';
 };
-
 const saveContacts = () => {
   localStorage.setItem('contacts', JSON.stringify(contacts.value));
 };
-
 const saveContact = () => {
   const e164Regex = /^\+?[1-9]\d{1,14}$/;
   if (!e164Regex.test(form.value.phone)) {
@@ -101,12 +73,10 @@ const saveContact = () => {
   showModal.value = false;
   saveContacts();
 };
-
 const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
   saveContacts();
 };
-
 const generateCalendar = () => {
   const now = new Date(selectedYear.value, selectedMonth.value);
   const start = startOfMonth(now);
@@ -120,7 +90,6 @@ const generateCalendar = () => {
   }));
   loadSchedule();
 };
-
 const saveSchedule = () => {
   const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
@@ -132,7 +101,6 @@ const saveSchedule = () => {
   localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
 };
-
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
@@ -148,9 +116,14 @@ const loadSchedule = () => {
     });
   }
 };
-
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+onMounted(() => {
+  const savedContacts = localStorage.getItem('contacts');
+  if (savedContacts) {
+    contacts.value = JSON.parse(savedContacts);
+  }
+  generateCalendar();
+});
 </script>
-
 <style src="./OnCallApplication.css" scoped></style>
