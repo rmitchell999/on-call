@@ -4,7 +4,7 @@
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
-import { Auth } from '@aws-amplify/auth';
+import { Auth } from 'aws-amplify';
 
 interface OnCallEntry {
   groupName: string;
