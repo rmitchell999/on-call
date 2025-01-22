@@ -1,4 +1,3 @@
-<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
@@ -31,14 +30,11 @@ const selectedYear = ref(new Date().getFullYear());
 const userGroups = ref<string[]>([]);
 const isReadOnly = ref(false);
 
-async function fetchUserGroups() {
-  try {
-    const user = await Auth.currentAuthenticatedUser();
-    userGroups.value = user.signInUserSession.accessToken.payload['cognito:groups'] || [];
-    isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
-  } catch (error) {
-    console.error('Error fetching user groups:', error);
-  }
+// Replace this with your own logic to determine if the user is in the TerneuzenReadOnly group
+function checkUserGroup() {
+  // Simulating the check for the group
+  userGroups.value = ['TerneuzenReadOnly']; // Example: Replace with actual logic
+  isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
 }
 
 function generateTimeOptions() {
@@ -142,8 +138,8 @@ const loadSchedule = () => {
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
 
-onMounted(async () => {
-  await fetchUserGroups();
+onMounted(() => {
+  checkUserGroup(); // Check user group on mount
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
