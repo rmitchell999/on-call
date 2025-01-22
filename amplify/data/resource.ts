@@ -23,4 +23,24 @@ export const data = defineData({
       expiresInDays: 30,
     },
   },
+  prePush: async ({ amplify, context }) => {
+    const auth = amplify.getPluginInstance('auth');
+    const userPoolId = auth.userPoolId;
+    const userPoolClient = new auth.AWS.CognitoIdentityServiceProvider();
+    
+    const groups = ["TerneuzenAdmin", "TerneuzenReadOnly"];
+    
+    for (const groupName of groups) {
+      try {
+        await userPoolClient.createGroup({
+          GroupName: groupName,
+          UserPoolId: userPoolId,
+        }).promise();
+      } catch (error) {
+        if (error.code !== 'GroupExistsException') {
+          throw error;
+        }
+      }
+    }
+  },
 });
