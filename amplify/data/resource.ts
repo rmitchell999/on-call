@@ -1,5 +1,4 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import * as AWS from 'aws-sdk';
 
 const schema = a.schema({
   Todo: a
@@ -25,28 +24,3 @@ export const data = defineData({
     },
   },
 });
-
-const prePush = async ({ amplify, context }: { amplify: any, context: any }) => {
-  const auth = amplify.getPluginInstance('auth');
-  const userPoolId = auth.userPoolId;
-  const userPoolClient = new AWS.CognitoIdentityServiceProvider();
-
-  const groups = ["TerneuzenAdmin", "TerneuzenReadOnly"];
-
-  for (const groupName of groups) {
-    try {
-      await userPoolClient.createGroup({
-        GroupName: groupName,
-        UserPoolId: userPoolId,
-      }).promise();
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'GroupExistsException') {
-        throw error;
-      }
-    }
-  }
-};
-
-export const hooks = {
-  prePush,
-};
