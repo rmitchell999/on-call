@@ -1,5 +1,5 @@
-import { type ClientSchema, a, defineData, Amplify } from "@aws-amplify/backend";
-import * as aws from '@aws-sdk';
+import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import * as AWS from 'aws-sdk';
 
 const schema = a.schema({
   Todo: a
@@ -26,10 +26,10 @@ export const data = defineData({
   },
 });
 
-const prePush = async ({ amplify, context }: { amplify: Amplify, context: any }) => {
+const prePush = async ({ amplify, context }: { amplify: any, context: any }) => {
   const auth = amplify.getPluginInstance('auth');
   const userPoolId = auth.userPoolId;
-  const userPoolClient = new aws.CognitoIdentityServiceProvider();
+  const userPoolClient = new AWS.CognitoIdentityServiceProvider();
 
   const groups = ["TerneuzenAdmin", "TerneuzenReadOnly"];
 
