@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { Amplify, Auth } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-vue';
 import OnCallApplicationAdmin from './components/OnCallApplicationAdmin.vue';
 import OnCallApplicationReadonly from './components/OnCallApplicationReadonly.vue';
+import { Amplify, Auth } from 'aws-amplify'; // Ensure this import is correct
 import outputs from "../amplify_outputs.json"; // Ensure this path is correct based on your project structure
 
 // Configure Amplify with the outputs from your AWS Amplify project
