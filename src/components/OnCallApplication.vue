@@ -36,9 +36,8 @@ const isReadOnly = ref(false);
 function checkUserGroup() {
   // Simulating the check for the group, replace this with actual logic
   // For testing, manually set the userGroups value
-  // userGroups.value = ['TerneuzenAdmin']; // or 'TerneuzenReadOnly'
   // Example logic:
-  const user = { groups: ['TerneuzenAdmin'] }; // Simulate fetching user groups
+  const user = { groups: ['TerneuzenReadOnly'] }; // Simulate fetching user groups
   userGroups.value = user.groups;
   isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
 }
