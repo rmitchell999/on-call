@@ -1,4 +1,3 @@
-
 <div class="on-call-application">
   <div class="header">
     <button @click="props.signOut" class="logout-button">Logout</button>
@@ -12,25 +11,25 @@
     <div class="schedule-options">
       <div class="option-group">
         <label for="month">Month:</label>
-        <select id="month" v-model="selectedMonth" @change="generateCalendar">
+        <select id="month" v-model="selectedMonth" @change="generateCalendar" :disabled="isReadOnly">
           <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
         </select>
       </div>
       <div class="option-group">
         <label for="year">Year:</label>
-        <select id="year" v-model="selectedYear" @change="generateCalendar">
+        <select id="year" v-model="selectedYear" @change="generateCalendar" :disabled="isReadOnly">
           <option v-for="year in years" :key="year">{{ year }}</option>
         </select>
       </div>
       <div class="option-group">
         <label for="timezone">Timezone:</label>
-        <select id="timezone" v-model="selectedTimezone">
+        <select id="timezone" v-model="selectedTimezone" :disabled="isReadOnly">
           <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
         </select>
       </div>
       <div class="option-group">
         <label for="start-time">Start Time/EndTime:</label>
-        <select id="start-time" v-model="startTime">
+        <select id="start-time" v-model="startTime" :disabled="isReadOnly">
           <option v-for="time in timeOptions" :key="time">{{ time }}</option>
         </select>
       </div>
@@ -38,7 +37,7 @@
     <div class="calendar-grid">
       <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day" :class="{ 'highlighted': entry.contact !== '' }">
         <div>{{ entry.day }}</div>
-        <select v-model="entry.contact" @change="updatePhoneNumber(index)">
+        <select v-model="entry.contact" @change="updatePhoneNumber(index)" :disabled="isReadOnly">
           <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
             {{ contact.name }}
           </option>
@@ -46,13 +45,13 @@
         <div>{{ entry.phone }}</div>
       </div>
     </div>
-    <div class="action-buttons">
+    <div class="action-buttons" v-if="!isReadOnly">
       <button @click="saveSchedule">Save</button>
     </div>
   </div>
   <div v-if="activeTab === 'contacts'">
     <h1>On-Call Contact List</h1>
-    <button @click="(event) => openModal(event)">+ ADD</button>
+    <button @click="(event) => openModal(event)" v-if="!isReadOnly">+ ADD</button>
     <table>
       <thead>
         <tr>
@@ -70,8 +69,8 @@
           <td>{{ contact.name }}</td>
           <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
           <td>
-            <button @click="(event) => openModal(event, index)">✏️</button>
-            <button @click="deleteContact(index)">🗑️</button>
+            <button @click="(event) => openModal(event, index)" v-if="!isReadOnly">✏️</button>
+            <button @click="deleteContact(index)" v-if="!isReadOnly">🗑️</button>
           </td>
         </tr>
       </tbody>

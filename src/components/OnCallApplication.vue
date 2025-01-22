@@ -1,4 +1,3 @@
-
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
@@ -11,6 +10,7 @@ interface OnCallEntry {
   contact: string;
   phone: string;
 }
+
 const props = defineProps<{ signOut: () => void }>();
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -28,6 +28,19 @@ const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
+const userGroups = ref<string[]>([]);
+const isReadOnly = ref(false);
+
+async function fetchUserGroups() {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    userGroups.value = user.signInUserSession.accessToken.payload['cognito:groups'] || [];
+    isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
+  } catch (error) {
+    console.error('Error fetching user groups:', error);
+  }
+}
+
 function generateTimeOptions() {
   const times = [];
   for (let i = 0; i < 24; i++) {
@@ -39,12 +52,14 @@ function generateTimeOptions() {
   }
   return times;
 }
+
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
     onCallList.value[index].phone = selectedContact.phone;
   }
 };
+
 const openModal = (event: MouseEvent, index: number | null = null) => {
   event.preventDefault();
   if (index !== null) {
@@ -57,9 +72,11 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   showModal.value = true;
   errorMessage.value = '';
 };
+
 const saveContacts = () => {
   localStorage.setItem('contacts', JSON.stringify(contacts.value));
 };
+
 const saveContact = () => {
   const e164Regex = /^\+?[1-9]\d{1,14}$/;
   if (!e164Regex.test(form.value.phone)) {
@@ -74,10 +91,12 @@ const saveContact = () => {
   showModal.value = false;
   saveContacts();
 };
+
 const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
   saveContacts();
 };
+
 const generateCalendar = () => {
   const now = new Date(selectedYear.value, selectedMonth.value);
   const start = startOfMonth(now);
@@ -91,6 +110,7 @@ const generateCalendar = () => {
   }));
   loadSchedule();
 };
+
 const saveSchedule = () => {
   const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
@@ -102,6 +122,7 @@ const saveSchedule = () => {
   localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
 };
+
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
@@ -117,9 +138,12 @@ const loadSchedule = () => {
     });
   }
 };
+
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
-onMounted(() => {
+
+onMounted(async () => {
+  await fetchUserGroups();
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
