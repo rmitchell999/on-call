@@ -4,6 +4,7 @@
 import '@/assets/main.css';
 import { ref, onMounted, defineProps } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { Auth } from 'aws-amplify'; // Import Auth from aws-amplify
 
 interface OnCallEntry {
   groupName: string;
@@ -32,14 +33,16 @@ const selectedYear = ref(new Date().getFullYear());
 const userGroups = ref<string[]>([]);
 const isReadOnly = ref(false);
 
-// Replace this with your own logic to determine if the user is in the TerneuzenReadOnly group
-function checkUserGroup() {
-  // Simulating the check for the group, replace this with actual logic
-  // For testing, manually set the userGroups value
-  // Example logic:
-  const user = { groups: ['TerneuzenReadOnly'] }; // Simulate fetching user groups
-  userGroups.value = user.groups;
-  isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
+// Function to check the user's groups and set permissions accordingly
+async function checkUserGroup() {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    const groups = user.signInUserSession.accessToken.payload['cognito:groups'] || [];
+    userGroups.value = groups;
+    isReadOnly.value = userGroups.value.includes('TerneuzenReadOnly');
+  } catch (error) {
+    console.error('Error fetching user groups:', error);
+  }
 }
 
 function generateTimeOptions() {
@@ -143,8 +146,8 @@ const loadSchedule = () => {
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
 
-onMounted(() => {
-  checkUserGroup(); // Check user group on mount
+onMounted(async () => {
+  await checkUserGroup(); // Check user group on mount
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
