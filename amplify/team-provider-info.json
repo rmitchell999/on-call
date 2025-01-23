@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-oncallapp-dev-2f24f-authRole",
+      "UnauthRoleArn": "arn:aws:iam::650251713968:role/amplify-oncallapp-dev-2f24f-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::650251713968:role/amplify-oncallapp-dev-2f24f-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-oncallapp-dev-2f24f-deployment",
+      "UnauthRoleName": "amplify-oncallapp-dev-2f24f-unauthRole",
+      "StackName": "amplify-oncallapp-dev-2f24f",
+      "StackId": "arn:aws:cloudformation:eu-west-1:650251713968:stack/amplify-oncallapp-dev-2f24f/393c91d0-d8d1-11ef-8647-067799a7aac9",
+      "AmplifyAppId": "d3metjy80tls9v"
+    },
+    "categories": {
+      "auth": {
+        "oncallappa086dfb1": {}
+      },
+      "api": {
+        "oncallapp": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+type Todo @model @auth(rules: [{ allow: groups, groups: ["TerneuzenAdmin"], operations: [create, read, update, delete] }, { allow: groups, groups: ["TerneuzenReadOnly"], operations: [read] }]) {
+  id: ID!
+  content: String!
+}
+
+type Contact @model @auth(rules: [{ allow: groups, groups: ["TerneuzenAdmin"], operations: [create, read, update, delete] }, { allow: groups, groups: ["TerneuzenReadOnly"], operations: [read] }]) {
+  id: ID!
+  email: String!
+  phone: String!
+  name: String!
+  onCall: Boolean!
+}
+
+type OnCallEntry @model @auth(rules: [{ allow: groups, groups: ["TerneuzenAdmin"], operations: [create, read, update, delete] }, { allow: groups, groups: ["TerneuzenReadOnly"], operations: [read] }]) {
+  id: ID!
+  groupName: String!
+  day: String!
+  contactID: ID!
+  contact: Contact @hasOne(fields: ["contactID"])
+  phone: String
+}
